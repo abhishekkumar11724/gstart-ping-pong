@@ -5,8 +5,7 @@ project(Gstar VERSION 1.0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(SOURCES
     src/main.cpp
-    src/network.cpp
-    # add other .cpp/.h files here
+    # add other .cpp/.h files here (network is header-only)
 )
 
 find_package(raylib REQUIRED) 
