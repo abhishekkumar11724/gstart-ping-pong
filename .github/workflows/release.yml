@@ -15,7 +15,7 @@
          - name: Install deps
            run: |
              sudo apt-get update
-             sudo apt-get install -y build-essential cmake git
+             sudo apt-get install -y build-essential cmake git libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
              git clone --depth 1 https://github.com/raysan5/raylib.git
              cd raylib/src
              cmake .. -DBUILD_SHARED_LIBS=OFF
@@ -56,7 +56,7 @@
              cmake .. \
                -DCMAKE_BUILD_TYPE=Release \
                -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-               -DBUNDLE_BUNDLE_NAME=Gstar.app
+               -DBUNDLE_BUNDLE_NAME=Gstar
              cmake --build . --config Release
 
          - name: Package with CPack (macOS .dmg)

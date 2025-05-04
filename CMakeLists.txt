@@ -8,10 +8,16 @@ set(SOURCES
     # add other .cpp/.h files here (network is header-only)
 )
 
+# Set default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+endif()
+
 find_package(raylib REQUIRED) 
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 # install target (for AppImage/App bundle packaging)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION usr/bin)
