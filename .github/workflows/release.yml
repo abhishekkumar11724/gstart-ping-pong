@@ -1,0 +1,72 @@
+   # .github/workflows/release.yml
+   name: Build & Release
+
+   on:
+     push:
+       tags:
+         - 'v*.*.*'     # e.g. v1.0.0
+
+   jobs:
+     build-linux:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v3
+
+         - name: Install deps
+           run: |
+             sudo apt-get update
+             sudo apt-get install -y build-essential cmake libraylib-dev
+
+         - name: Build
+           run: |
+             mkdir build && cd build
+             cmake .. -DCMAKE_BUILD_TYPE=Release
+             cmake --build . --config Release
+
+         - name: Package AppImage
+           run: |
+             # generate an AppDir
+             mkdir -p AppDir/usr/bin
+             cp build/Gstar AppDir/usr/bin/
+             # note: download appimagetool or add it to your PATH on runner
+             wget "https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage"
+             chmod +x appimagetool-x86_64.AppImage
+             ./appimagetool-x86_64.AppImage AppDir Gstar-linux.AppImage
+
+         - name: Publish Linux build
+           uses: softprops/action-gh-release@v1
+           with:
+             tag_name: ${{ github.ref_name }}
+             name: Gstar-${{ github.ref_name }}-linux
+             files: Gstar-linux.AppImage
+           env:
+             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+     build-macos:
+       runs-on: macos-latest
+       steps:
+         - uses: actions/checkout@v3
+
+         - name: Install deps
+           run: brew update && brew install cmake raylib
+
+         - name: Build .app bundle
+           run: |
+             mkdir build && cd build
+             cmake .. \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+               -DBUNDLE_BUNDLE_NAME=Gstar.app
+             cmake --build . --config Release
+
+         - name: Zip .app
+           run: zip -r Gstar-macos.zip Gstar.app
+
+         - name: Publish macOS build
+           uses: softprops/action-gh-release@v1
+           with:
+             tag_name: ${{ github.ref_name }}
+             name: Gstar-${{ github.ref_name }}-macos
+             files: Gstar-macos.zip
+           env:
+             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
