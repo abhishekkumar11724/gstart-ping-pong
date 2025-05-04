@@ -1,73 +1,75 @@
-   # .github/workflows/release.yml
-   name: Build & Release
+# .github/workflows/release.yml
+name: Build & Release
 
-   on:
-     push:
-       tags:
-         - 'v*.*.*'     # e.g. v1.0.0
+on:
+  push:
+    tags:
+      - 'v*.*.*'     # e.g. v1.0.0
 
-   jobs:
-     build-linux:
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v3
+# Add permissions required for creating releases
+permissions:
+  contents: write
 
-         - name: Install deps
-           run: |
-             sudo apt-get update
-             sudo apt-get install -y build-essential cmake git libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
-             git clone --depth 1 https://github.com/raysan5/raylib.git
-             cd raylib/src
-             cmake .. -DBUILD_SHARED_LIBS=OFF
-             make -j$(nproc)
-             sudo make install
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-         - name: Build
-           run: |
-             mkdir -p build && cd build
-             cmake .. -DCMAKE_BUILD_TYPE=Release
-             cmake --build . --config Release
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake git libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
+          git clone --depth 1 https://github.com/raysan5/raylib.git
+          cd raylib/src
+          cmake .. -DBUILD_SHARED_LIBS=OFF
+          make -j$(nproc)
+          sudo make install
 
-         - name: Package with CPack (TGZ)
-           run: |
-             cd build
-             cpack -G TGZ
+      - name: Build
+        run: |
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
 
-         - name: Publish Linux build
-           uses: softprops/action-gh-release@v1
-           with:
-             tag_name: ${{ github.ref_name }}
-             name: Gstar-${{ github.ref_name }}-linux
-             files: build/*.tar.gz
-           env:
-             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package with CPack (TGZ)
+        run: |
+          cd build
+          cpack -G TGZ
 
-     build-macos:
-       runs-on: macos-latest
-       steps:
-         - uses: actions/checkout@v3
+      - name: Publish Linux build
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Gstar-${{ github.ref_name }}-linux
+          files: build/*.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-         - name: Install deps
-           run: brew update && brew install cmake raylib
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
 
-         - name: Build .app bundle
-           run: |
-             mkdir -p build && cd build
-             cmake .. \
-               -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_OSX_ARCHITECTURES="arm64"
-             cmake --build . --config Release
+      - name: Install deps
+        run: brew update && brew install cmake raylib
 
-         - name: Package with CPack (macOS .dmg)
-           run: |
-             cd build
-             cpack -G DragNDrop
+      - name: Build .app bundle
+        run: |
+          mkdir -p build && cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64"
+          cmake --build . --config Release
 
-         - name: Publish macOS build
-           uses: softprops/action-gh-release@v1
-           with:
-             tag_name: ${{ github.ref_name }}
-             name: Gstar-${{ github.ref_name }}-macos
-             files: build/*.dmg
-           env:
-             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package with CPack (macOS .dmg)
+        run: |
+          cd build
+          cpack -G DragNDrop
+
+      - name: Publish macOS build
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Gstar-${{ github.ref_name }}-macos
+          files: build/*.dmg
+          token: ${{ secrets.GITHUB_TOKEN }}
