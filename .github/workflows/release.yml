@@ -23,22 +23,17 @@
              cmake .. -DCMAKE_BUILD_TYPE=Release
              cmake --build . --config Release
 
-         - name: Package AppImage
+         - name: Package with CPack (AppImage)
            run: |
-             # generate an AppDir
-             mkdir -p AppDir/usr/bin
-             cp build/Gstar AppDir/usr/bin/
-             # note: download appimagetool or add it to your PATH on runner
-             wget "https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage"
-             chmod +x appimagetool-x86_64.AppImage
-             ./appimagetool-x86_64.AppImage AppDir Gstar-linux.AppImage
+             cd build
+             cpack -G AppImage
 
          - name: Publish Linux build
            uses: softprops/action-gh-release@v1
            with:
              tag_name: ${{ github.ref_name }}
              name: Gstar-${{ github.ref_name }}-linux
-             files: Gstar-linux.AppImage
+             files: build/*.AppImage
            env:
              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -59,14 +54,16 @@
                -DBUNDLE_BUNDLE_NAME=Gstar.app
              cmake --build . --config Release
 
-         - name: Zip .app
-           run: zip -r Gstar-macos.zip Gstar.app
+         - name: Package with CPack (macOS .dmg)
+           run: |
+             cd build
+             cpack -G DragNDrop
 
          - name: Publish macOS build
            uses: softprops/action-gh-release@v1
            with:
              tag_name: ${{ github.ref_name }}
              name: Gstar-${{ github.ref_name }}-macos
-             files: Gstar-macos.zip
+             files: build/*.dmg
            env:
              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

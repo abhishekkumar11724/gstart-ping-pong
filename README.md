@@ -109,4 +109,12 @@ applications, and to alter it and redistribute it freely, subject to the followi
   as being the original software.
 
   3. This notice may not be removed or altered from any source distribution.
+
 # gstart-ping-pong
+
+## Releases
+
+Pre-built binaries are published on the GitHub Releases page:
+
+* Linux (AppImage): download the `.AppImage` file, make it executable (`chmod +x <filename>.AppImage`), then run it (`./<filename>.AppImage`).
+* macOS (.dmg): download the `.dmg` file, open it, and drag `Gstar.app` to your Applications folder.
