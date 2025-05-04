@@ -116,5 +116,5 @@ applications, and to alter it and redistribute it freely, subject to the followi
 
 Pre-built binaries are published on the GitHub Releases page:
 
-* Linux (AppImage): download the `.AppImage` file, make it executable (`chmod +x <filename>.AppImage`), then run it (`./<filename>.AppImage`).
-* macOS (.dmg): download the `.dmg` file, open it, and drag `Gstar.app` to your Applications folder.
+- Linux (AppImage): the AppImage bundles all required libraries so no extra installation is needed — just `chmod +x Gstar-<version>.AppImage` and run it (`./Gstar-<version>.AppImage`).
+- macOS (.dmg): the .app bundle includes all necessary frameworks — download the `.dmg`, open it, and drag `Gstar.app` to your Applications; no Homebrew or other installs are required.
