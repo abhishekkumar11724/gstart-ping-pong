@@ -28,17 +28,17 @@
              cmake .. -DCMAKE_BUILD_TYPE=Release
              cmake --build . --config Release
 
-         - name: Package with CPack (AppImage)
+         - name: Package with CPack (TGZ)
            run: |
              cd build
-             cpack -G AppImage
+             cpack -G TGZ
 
          - name: Publish Linux build
            uses: softprops/action-gh-release@v1
            with:
              tag_name: ${{ github.ref_name }}
              name: Gstar-${{ github.ref_name }}-linux
-             files: build/*.AppImage
+             files: build/*.tar.gz
            env:
              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -55,8 +55,7 @@
              mkdir -p build && cd build
              cmake .. \
                -DCMAKE_BUILD_TYPE=Release \
-               -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-               -DBUNDLE_BUNDLE_NAME=Gstar
+               -DCMAKE_OSX_ARCHITECTURES="arm64"
              cmake --build . --config Release
 
          - name: Package with CPack (macOS .dmg)
