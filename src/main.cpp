@@ -6,7 +6,8 @@ Use this as a starting point or replace it with your code.
 by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
 
 */
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
+#include <iostream>
 #include "raylib.h"
 #include <string>
 #include "network.h"
